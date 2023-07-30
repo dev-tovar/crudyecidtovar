@@ -9,22 +9,22 @@ const routes = [
         component: AccountsComponent,
         children: [
             {
-              path: 'new',
-              name: 'new',
-              props: true,
-                    meta: {
-                        showModal: true
-                    },
-                    component: NewUserComponent,
+                path: 'new',
+                name: 'new',
+                props: true,
+                meta: {
+                    showModal: true
+                },
+                component: NewUserComponent,
             },
             {
-              path: 'edit/:id',
-              name: 'edit',
-              props: true,
-                    meta: {
-                        showModal: true
-                    },
-                    component: NewUserComponent,
+                path: 'edit/:id',
+                name: 'edit',
+                props: true,
+                meta: {
+                    showModal: true
+                },
+                component: NewUserComponent,
             },
         ]
     }

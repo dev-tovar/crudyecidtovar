@@ -19,7 +19,7 @@ class AccountController extends Controller
     {
         if ($request->ajax()) {
 
-            return Account::with('infoTypeId')->orderBy('created_at', 'DESC')->get();
+            return Account::with('infoTypeId')->orderBy('created_at', 'DESC')->paginate($request->itemspage);
         } else {
             return response()->json(['message' => 'Forbidden request'], 403);
         }

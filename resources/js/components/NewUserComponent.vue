@@ -42,21 +42,23 @@
                 <v-col cols="12" sm="6" md="6" class="py-1">
                   <span class="font-weight-bold">Nombres:</span>
                   <v-text-field
-                    :rules="[rules.required, rules.min2]"
+                    :rules="[rules.required, rules.min2, rules.maximo50caracteres]"
                     required
                     density="compact"
                     variant="outlined"
                     v-model="formUser.name"
+                    counter="50"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="6" class="py-1">
                   <span class="font-weight-bold">Apellidos:</span>
                   <v-text-field
-                    :rules="[rules.required, rules.min2]"
+                    :rules="[rules.required, rules.min2, rules.maximo50caracteres]"
                     required
                     density="compact"
                     variant="outlined"
                     v-model="formUser.lastName"
+                    counter="50"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="6" class="py-1">
@@ -77,21 +79,23 @@
                     >Número de Identificación:</span
                   >
                   <v-text-field
-                    :rules="[rules.required]"
+                    :rules="[rules.required, rules.number, rules.maximo20caracteres]"
                     required
                     density="compact"
                     variant="outlined"
                     v-model="formUser.numId"
+                    counter="20"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="6" class="py-1">
                   <span class="font-weight-bold">Teléfono:</span>
                   <v-text-field
-                    :rules="[rules.required]"
+                    :rules="[rules.required, rules.number, rules.maximo10caracteres]"
                     required
                     density="compact"
                     variant="outlined"
                     v-model="formUser.phone"
+                    counter="10"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -160,6 +164,16 @@ export default {
         required: (v) => !!v || "Este campo es requerido",
         min2: (v) =>
           (v && v.length >= 2) || "Este campo debe tener al menos 2 caracteres",
+        number: v => /^([0-9])*$/.test(v) || "Este campo debe ser númerico",
+        maximo20caracteres: v =>
+                    (v && v.length <= 20) ||
+                    "Este campo no debe superar los 20 caracteres",
+        maximo50caracteres: v =>
+                    (v && v.length <= 50) ||
+                    "Este campo no debe superar los 50 caracteres",
+        maximo10caracteres: v =>
+                    (v && v.length <= 10) ||
+                    "Este campo no debe superar los 10 caracteres",
       },
     };
   },

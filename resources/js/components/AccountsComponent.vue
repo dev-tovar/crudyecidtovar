@@ -21,15 +21,23 @@
       </template>
       <v-divider class="border-opacity-0 my-2"></v-divider>
       <v-card-text>
-        <v-table>
+        <v-card :loading="loadingTable">
+          <v-card-text>
+             <v-table>
           <thead>
             <tr>
               <th class="text-left text-body-2 font-weight-bold">Nombre</th>
               <th class="text-left text-body-2 font-weight-bold">Apellidos</th>
-              <th class="text-left text-body-2 font-weight-bold">Tipo de documento</th>
-              <th class="text-left text-body-2 font-weight-bold">Número de identificación</th>
+              <th class="text-left text-body-2 font-weight-bold">
+                Tipo de documento
+              </th>
+              <th class="text-left text-body-2 font-weight-bold">
+                Número de identificación
+              </th>
               <th class="text-left text-body-2 font-weight-bold">Teléfono</th>
-              <th class="text-left text-body-2 font-weight-bold">F. creación</th>
+              <th class="text-left text-body-2 font-weight-bold">
+                F. creación
+              </th>
               <th class="text-left text-body-2 font-weight-bold"></th>
             </tr>
           </thead>
@@ -57,7 +65,7 @@
               <td>{{ account.numero_id }}</td>
               <td>{{ account.numero_telefono }}</td>
               <td>{{ account.created_at }}</td>
-              <td>
+              <td style="width: 115px">
                 <router-link
                   :to="'/edit/' + account.id"
                   custom
@@ -73,20 +81,32 @@
                   >
                   </v-btn>
                 </router-link>
-                  <v-btn
-                    @click="deleteAccount(account.id)"
-                    role="link"
-                    size="x-small"
-                    icon="mdi-delete"
-                    color="red"
-                    class="mx-1"
-                  >
-                  </v-btn>
+                <v-btn
+                  @click="deleteAccount(account.id)"
+                  role="link"
+                  size="x-small"
+                  icon="mdi-delete"
+                  color="red"
+                  class="mx-1"
+                >
+                </v-btn>
               </td>
             </tr>
           </tbody>
         </v-table>
+          </v-card-text>
+        </v-card>
+       
       </v-card-text>
+      <v-card-actio>
+        <div class="text-center">
+          <v-pagination
+            v-model="page"
+            :length="pageCount"
+            :total-visible="7"
+          ></v-pagination>
+        </div>
+      </v-card-actio>
     </v-card>
     <div v-if="show_modal" class="modal-route">
       <div class="modal-content">
@@ -107,12 +127,15 @@
         <v-card-actions class="pt-3">
           <v-spacer></v-spacer>
           <v-btn
+            :disabled="loadingDelete"
             @click="closeDeleteAccount"
             text
             class="body-2 font-weight-bold text-capitalize"
             >Cancelar</v-btn
           >
           <v-btn
+            :disabled="loadingDelete"
+            :loading="loadingDelete"
             prepend-icon="mdi-delete"
             color="red"
             variant="flat"
@@ -134,6 +157,11 @@ export default {
   name: "AccountsComponent",
   data() {
     return {
+      page: 1,
+      pageCount: 1,
+      itemsPerPage: 7,
+      loadingDelete: false,
+      loadingTable: false,
       show_modal: false,
       itemsAccounts: [],
       idAccountDelete: null,
@@ -150,16 +178,24 @@ export default {
         }
       },
     },
+    page(){
+      this.getAccounts();
+    }
   },
   methods: {
     getAccounts() {
+      this.loadingTable = true;
       axios
-        .get("/crudAccount")
+        .get("/crudAccount?page="+ this.page + "&itemspage="+this.itemsPerPage )
         .then((res) => {
-          this.itemsAccounts = res.data;
+          this.itemsAccounts = res.data.data;
+
+          this.pageCount = Math.ceil(res.data.total / this.itemsPerPage);
+          this.loadingTable = false;
         })
         .catch((err) => {
           console.error(err);
+          this.loadingTable = false;
         });
     },
     deleteAccount(id) {
@@ -170,16 +206,20 @@ export default {
       this.idAccountDelete = null;
       this.dialogConfirmDelete = false;
     },
-    deleteAccountConfirm(){
-      axios.delete('/crudAccount/' + this.idAccountDelete)
-      .then(res => {
-        this.getAccounts();
-        this.dialogConfirmDelete = false;
-      })
-      .catch(err => {
-        console.error(err); 
-      })
-    }
+    deleteAccountConfirm() {
+      this.loadingDelete = true;
+      axios
+        .delete("/crudAccount/" + this.idAccountDelete)
+        .then((res) => {
+          this.getAccounts();
+          this.dialogConfirmDelete = false;
+          this.loadingDelete = false;
+        })
+        .catch((err) => {
+          console.error(err);
+          this.loadingDelete = false;
+        });
+    },
   },
 };
 </script>
